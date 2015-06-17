@@ -39,6 +39,18 @@ int WiFiStream::begin(char *ssid, uint8_t key_idx, const char *key, uint16_t por
 	return result;
 }
 
+int WiFiStream::begin(char *ssid, const char *passphrase, uint16_t port)
+{
+	if( !verify_connection_ready() ) return 0;
+	
+	int result = WiFi.begin( ssid, passphrase);
+	if( result == 0 ) return 0;
+	
+	server = WiFiServer( port );
+	server.begin();
+	return result;
+}
+
 int WiFiStream::begin(char *ssid, IPAddress local_ip, uint16_t port)
 {
 	if( !verify_connection_ready() ) return 0;
@@ -65,10 +77,28 @@ int WiFiStream::begin(char *ssid, IPAddress local_ip, uint8_t key_idx, const cha
 	return result;
 }
 
+int WiFiStream::begin(char *ssid, IPAddress local_ip, const char *passphrase, uint16_t port)
+{
+	if( !verify_connection_ready() ) return 0;
+	
+	WiFi.config( local_ip );
+	int result = WiFi.begin( ssid, passphrase);
+	if( result == 0 ) return 0;
+	
+	server = WiFiServer( port );
+	server.begin();
+	return result;
+}
+
 int WiFiStream::verify_connection_ready()
 {
 	uint8_t status = WiFi.status();
 	return ( status == WL_NO_SHIELD || status == WL_CONNECTED ) ? 0 : 1;
+}
+
+void WiFiStream::config(IPAddress local_ip)
+{
+	WiFi.config( local_ip );
 }
 
 IPAddress WiFiStream::localIP()
