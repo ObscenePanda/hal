@@ -14,15 +14,26 @@ class WiFiStream : public Stream
     WiFiClient client;
     
     int connect_client();
+	int verify_connection_ready();
 
   public:       
     WiFiStream();
     
-    // begin with dynamic IP:port (DHCP)
+	/* dynamic IP (DHCP) configurations */
+	
+	//OPEN networks
     int begin(char *ssid, uint16_t port);
+	
+	//WEP-encrypted networks
+    int begin(char *ssid, uint8_t key_idx, const char *key, uint16_t port);
+	
+	/* static IP configurations */
 
-    // begin with static IP:port
-    void begin(char *mac_address, IPAddress local_ip, uint16_t port);
+    //OPEN networks with static IP
+    int begin(char *mac_address, IPAddress local_ip, uint16_t port);
+	
+	//WEP-encrypted networks with static IP
+    int begin(char *ssid, IPAddress local_ip, uint8_t key_idx, const char *key, uint16_t port);
 
     // get DCHP IP
     IPAddress localIP();
