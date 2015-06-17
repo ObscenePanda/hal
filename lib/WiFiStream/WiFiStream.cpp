@@ -16,27 +16,59 @@
 
 int WiFiStream::begin(char *ssid, uint16_t port)
 {
-	if( WiFi.status() == WL_NO_SHIELD ) return 0;
-	if( WiFi.status() != WL_CONNECTED )
-	{
-		int result = WiFi.begin( ssid );
-		if( result == 0 )
-			return 0;
-
-		delay( 10000 );
-		server = WiFiServer( port );
-		server.begin();
-		return result;
-	}
-	return 0;
+	if( !verify_connection_ready() ) return 0;
+	
+	int result = WiFi.begin( ssid );
+	if( result == 0 )
+		return 0;
+	
+	server = WiFiServer( port );
+	server.begin();
+	return result;
 }
 
-void WiFiStream::begin(char *ssid, IPAddress local_ip, uint16_t port)
+int WiFiStream::begin(char *ssid, uint8_t key_idx, const char *key, uint16_t port)
 {
+	if( !verify_connection_ready() ) return 0;
+	
+	int result = WiFi.begin( ssid, key_idx, key );
+	if( result == 0 ) return 0;
+	
+	server = WiFiServer( port );
+	server.begin();
+	return result;
+}
+
+int WiFiStream::begin(char *ssid, IPAddress local_ip, uint16_t port)
+{
+	if( !verify_connection_ready() ) return 0;
+	
 	WiFi.config( local_ip );
-	WiFi.begin( ssid );
-    server = WiFiServer(port);
-    server.begin();
+	int result = WiFi.begin( ssid );
+	if( result == 0 ) return 0;
+	
+	server = WiFiServer(port);
+	server.begin();
+	return result;
+}
+
+int WiFiStream::begin(char *ssid, IPAddress local_ip, uint8_t key_idx, const char *key, uint16_t port)
+{
+	if( !verify_connection_ready() ) return 0;
+	
+	WiFi.config( local_ip );
+	int result = WiFi.begin( ssid, key_idx, key );
+	if( result == 0 ) return 0;
+	
+	server = WiFiServer(port);
+	server.begin();
+	return result;
+}
+
+int WiFiStream::verify_connection_ready()
+{
+	uint8_t status = WiFi.status();
+	return ( status == WL_NO_SHIELD || status == WL_CONNECTED ) ? 0 : 1;
 }
 
 IPAddress WiFiStream::localIP()
