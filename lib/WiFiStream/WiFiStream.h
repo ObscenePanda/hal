@@ -27,6 +27,9 @@ class WiFiStream : public Stream
 	//WEP-encrypted networks
     int begin(char *ssid, uint8_t key_idx, const char *key, uint16_t port);
 	
+	//WPA-encrypted networks
+    int begin(char *ssid, const char *passphrase, uint16_t port);
+	
 	/* static IP configurations */
 
     //OPEN networks with static IP
@@ -34,6 +37,12 @@ class WiFiStream : public Stream
 	
 	//WEP-encrypted networks with static IP
     int begin(char *ssid, IPAddress local_ip, uint8_t key_idx, const char *key, uint16_t port);
+	
+	//WPA-encrypted networks with static IP
+	int begin(char *ssid, IPAddress local_ip, const char *passphrase, uint16_t port);
+	
+	// allows another way to configure a static IP before begin is called
+	void config(IPAddress local_ip);
 
     // get DCHP IP
     IPAddress localIP();
