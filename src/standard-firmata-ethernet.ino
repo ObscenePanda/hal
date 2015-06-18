@@ -30,6 +30,7 @@
  */
 
 #include <Servo.h>
+#include <SPI.h>
 #include <Wire.h>
 #include <Ethernet.h>
 #include <Firmata.h>
@@ -54,16 +55,32 @@
 
 #define MAC_ADDRESS 0xDE,0xAD,0xBE,0xEF,0xFE,0xED
 
-// uncomment to get IP from DHCP server
-// #define DHCP 1
-
+/*
+ * if you do not want to use a static IP (v4) address, comment the line below. You can also change the IP.
+ * if this line is commented out, the ethernet shield will attempt to get an IP from the DHCP server
+ */
 #define STATIC_IP_ADDRESS 192,168,2,100
-#define PORT 5000;
 
+//define your port number here, you will need this to open a TCP connection to your Arduino
+#define PORT 5000;
 
 /*==============================================================================
  * GLOBAL VARIABLES
  *============================================================================*/
+ 
+/* ethernet-related variables */
+EthernetStream ethernet;
+
+// Enter a MAC address and IP address for your controller below.
+// The IP address will be dependent on your local network:
+byte mac[] = { MAC_ADDRESS };
+
+// comment to user static IP
+#ifdef STATIC_IP_ADDRESS
+  IPAddress ip(STATIC_IP_ADDRESS);
+#endif
+
+int port = PORT;
 
 /* analog inputs */
 int analogInputsToReport = 0; // bitwise array to store pin reporting
@@ -602,36 +619,22 @@ void systemResetCallback()
   */
 }
 
-EthernetStream ethernet;
-
-// Enter a MAC address and IP address for your controller below.
-// The IP address will be dependent on your local network:
-byte mac[] = { MAC_ADDRESS };
-
-// uncomment to get IP from DHCP server
-//#define DHCP 1
-
-// comment to user static IP
-#ifndef DHCP
-  IPAddress ip(STATIC_IP_ADDRESS);
-#endif
-
-int port = PORT;
 
 
 void setup() 
 {
   Serial.begin(9600);
+  while( !Serial );
   Serial.println("setup()");
   
-  #ifdef DHCP
+  #ifndef STATIC_IP_ADDRESS
     // IP by DHCP
     Serial.println("Requesting IP from DHCP ...");      
     ethernet.begin(mac, port);
     Serial.print("IP: ");       
     Serial.println(ethernet.localIP());
   #else
-    // static IP      
+    // static IP
     ethernet.begin(mac, ip, port);
     Serial.print("Static IP: ");
     Serial.println(ethernet.localIP());
