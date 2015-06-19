@@ -670,19 +670,7 @@ void setup()
       wifiStream.begin( ssid, port );
       
     #endif //END USING_WPA
-  #endif //END USING_WEP  
-  
-  /*
-  #ifdef DHCP
-    // IP by DHCP
-    Serial.println("Requesting IP from DHCP ...");   
-    wifiStream.begin( ssid, port );
-  #else
-    // static IP
-    wifiStream.begin( ssid, ip, port );
-    Serial.println("Using static IP ...");
-  #endif
-  */
+  #endif //END USING_WEP
   
   Serial.println("wifi setup done"); 
   
